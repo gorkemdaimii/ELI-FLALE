@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Elifime Dijtal Hediye</title>
     <style>
         body {
@@ -15,12 +15,13 @@
             align-items: center;
             min-height: 100vh;
             overflow-x: hidden;
+            touch-action: manipulation;
         }
         
         .container {
             max-width: 800px;
             width: 100%;
-            padding: 20px;
+            padding: 15px;
             box-sizing: border-box;
         }
         
@@ -31,7 +32,7 @@
         }
         
         h1 {
-            font-size: 2.5rem;
+            font-size: 2rem;
             margin-bottom: 10px;
             color: #e91e63;
         }
@@ -39,15 +40,15 @@
         .note-container {
             background-color: white;
             border-radius: 15px;
-            padding: 30px;
+            padding: 20px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            margin: 20px 0;
+            margin: 15px 0;
             position: relative;
         }
         
         .message {
-            font-size: 1.2rem;
-            line-height: 1.6;
+            font-size: 1.1rem;
+            line-height: 1.5;
             color: #333;
         }
         
@@ -95,21 +96,23 @@
             background-color: #e91e63;
             color: white;
             border: none;
-            padding: 12px 25px;
+            padding: 12px 20px;
             font-size: 1rem;
             border-radius: 25px;
             cursor: pointer;
-            margin-top: 20px;
+            margin-top: 15px;
             transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
         
-        .button:hover {
+        .button:hover, .button:active {
             background-color: #c2185b;
             transform: scale(1.05);
         }
         
         .music-control {
-            margin-top: 20px;
+            margin-top: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -144,25 +147,28 @@
             align-items: center;
             z-index: 9999;
             transition: opacity 1s ease-out;
+            padding: 15px;
+            box-sizing: border-box;
         }
         
         .splash-content {
             text-align: center;
+            width: 100%;
         }
         
         .splash-title {
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: #e91e63;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             opacity: 0;
             transform: translateY(20px);
             animation: fadeInUp 1s forwards 0.5s;
         }
         
         .splash-subtitle {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #c2185b;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             opacity: 0;
             transform: translateY(20px);
             animation: fadeInUp 1s forwards 1s;
@@ -190,10 +196,39 @@
         }
         
         .splash-tulip {
-            width: 200px;
-            height: 300px;
-            margin-bottom: 30px;
+            width: 180px;
+            height: 260px;
+            margin-bottom: 20px;
             animation: growTulip 2s ease-out forwards;
+        }
+        
+        @media (max-width: 480px) {
+            .splash-tulip {
+                width: 150px;
+                height: 220px;
+            }
+            
+            .splash-title {
+                font-size: 1.8rem;
+            }
+            
+            .splash-subtitle {
+                font-size: 1rem;
+                margin-bottom: 25px;
+            }
+            
+            h1 {
+                font-size: 1.7rem;
+            }
+            
+            .message {
+                font-size: 1rem;
+            }
+            
+            .tulip-container svg {
+                width: 320px;
+                height: 320px;
+            }
         }
         
         .progress-container {
@@ -264,7 +299,7 @@
                 <path d="M220,160 Q210,140 215,120" stroke="#f8bbd0" stroke-width="2" fill="none" opacity="0.7" />
             </svg>
             
-            <h1 class="splash-title">Dijital Hediye Daimi Company Tarafından. </h1>
+                   <h1 class="splash-title">Dijital Hediye Daimi Company Tarafından. </h1>
             <p class="splash-subtitle">Sevgi ile hazırlandı, kalbimle sunuldu...</p>
             
             <div class="progress-container">
@@ -279,7 +314,7 @@
     <div class="main-content" id="mainContent">
         <div class="container">
             <header>
-                <h1>Elifim, param olmadığı için bu dijital lale sana,</h1>
+                   <h1>Elifim, param olmadığı için bu dijital lale sana,</h1>
             </header>
             
             <div class="note-container">
@@ -324,11 +359,28 @@
         </div>
         
         <footer>
-            Sevgi ile hazırlandı ❤️ 13 Mayıs 2025
+               Sevgi ile hazırlandı ❤️ 13 Mayıs 2025
         </footer>
     </div>
 
     <script>
+        // Prevent pinch zoom on mobile
+        document.addEventListener('touchmove', function(event) {
+            if (event.scale !== 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+        
+        // Double tap zoom disable
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+        
         // Splash Screen Animation
         document.addEventListener('DOMContentLoaded', () => {
             const progressBar = document.getElementById('progressBar');
@@ -408,7 +460,7 @@
             if (!audio) {
                 audio = new Audio();
                 // Using a placeholder for music - in a real site you would use an actual music file
-                audio.src = 'gitme.mp3'; // Placeholder
+                 audio.src = 'gitme.mp3'; // Placeholder
                 audio.loop = true;
                 playMusic.textContent = '🔇 Müziği Durdur';
                 audio.play().catch(e => {
