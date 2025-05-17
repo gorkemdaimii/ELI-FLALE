@@ -68,23 +68,25 @@
         }
         
         .heart {
-            position: absolute;
+            position: fixed; /* Changed from absolute to fixed to cover entire screen */
             opacity: 0;
-            font-size: 20px;
+            font-size: 30px; /* Increased heart size */
             color: #e91e63;
-            animation: float 4s ease-in-out infinite;
+            z-index: 100; /* Make sure hearts appear above other content */
+            animation: float 6s ease-in-out infinite; /* Extended animation duration */
+            pointer-events: none; /* Make hearts non-interactive so they don't block clicks */
         }
         
         @keyframes float {
             0% {
-                transform: translateY(0) rotate(0deg);
+                transform: translateY(100vh) rotate(0deg);
                 opacity: 0;
             }
             10% {
                 opacity: 1;
             }
-            90% {
-                opacity: 1;
+            80% {
+                opacity: 0.8;
             }
             100% {
                 transform: translateY(-100px) rotate(360deg);
@@ -273,9 +275,23 @@
             opacity: 0;
             margin-top: 30px;
         }
+
+        /* Heart animation container */
+        .hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
     </style>
 </head>
 <body>
+    <!-- Heart Container -->
+    <div class="hearts-container" id="heartsContainer"></div>
+    
     <!-- Splash Screen -->
     <div class="splash-screen" id="splashScreen">
         <div class="splash-content">
@@ -299,7 +315,7 @@
                 <path d="M220,160 Q210,140 215,120" stroke="#f8bbd0" stroke-width="2" fill="none" opacity="0.7" />
             </svg>
             
-                   <h1 class="splash-title">Dijital Hediye Daimi Company Tarafından. </h1>
+            <h1 class="splash-title">Dijital Hediye Daimi Company Tarafından.</h1>
             <p class="splash-subtitle">Sevgi ile hazırlandı, kalbimle sunuldu...</p>
             
             <div class="progress-container">
@@ -314,7 +330,7 @@
     <div class="main-content" id="mainContent">
         <div class="container">
             <header>
-                   <h1>Elifim, param olmadığı için bu dijital lale sana,</h1>
+                <h1>Elifim, param olmadığı için bu dijital lale sana,</h1>
             </header>
             
             <div class="note-container">
@@ -359,7 +375,7 @@
         </div>
         
         <footer>
-               Sevgi ile hazırlandı ❤️ 13 Mayıs 2025
+            Sevgi ile hazırlandı ❤️ 13 Mayıs 2025
         </footer>
     </div>
 
@@ -430,26 +446,104 @@
         const tulipSvg = document.getElementById('tulipSvg');
         tulipSvg.style.animation = 'sway 5s infinite ease-in-out';
         
-        // Heart animation function
+        // Heart animation function - improved to cover entire screen
         const heartButton = document.getElementById('heartButton');
-        heartButton.addEventListener('click', createHearts);
+        const heartsContainer = document.getElementById('heartsContainer');
+        let heartInterval;
         
-        function createHearts() {
-            for (let i = 0; i < 20; i++) {
-                setTimeout(() => {
-                    const heart = document.createElement('div');
-                    heart.innerHTML = '❤️';
-                    heart.classList.add('heart');
-                    heart.style.left = Math.random() * 100 + '%';
-                    heart.style.animationDelay = Math.random() * 2 + 's';
-                    document.body.appendChild(heart);
-                    
-                    // Remove heart after animation
-                    setTimeout(() => {
-                        heart.remove();
-                    }, 4000);
-                }, i * 100);
+        heartButton.addEventListener('click', () => {
+            if (heartInterval) {
+                clearInterval(heartInterval);
+                heartInterval = null;
+                heartButton.textContent = 'Sevgi Yağmuru';
+                // Remove all existing hearts
+                while (heartsContainer.firstChild) {
+                    heartsContainer.removeChild(heartsContainer.firstChild);
+                }
+            } else {
+                createHeartRain();
+                heartButton.textContent = 'Kalplerini Durdur';
             }
+        });
+        
+        function createHeartRain() {
+            // Initial burst of hearts
+            for (let i = 0; i < 50; i++) {
+                createHeart();
+            }
+            
+            // Continue creating hearts at intervals
+            heartInterval = setInterval(() => {
+                for (let i = 0; i < 5; i++) {
+                    createHeart();
+                }
+                
+                // Clean up hearts that have completed animation
+                const hearts = document.querySelectorAll('.heart');
+                if (hearts.length > 150) { // Limit maximum hearts for performance
+                    for (let i = 0; i < hearts.length - 150; i++) {
+                        if (hearts[i]) {
+                            hearts[i].remove();
+                        }
+                    }
+                }
+            }, 300);
+        }
+        
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            
+            // Random heart style - variety of hearts and colors
+            const heartStyles = ['❤️', '💖', '💕', '💓', '💗', '💘', '💝'];
+            heart.innerHTML = heartStyles[Math.floor(Math.random() * heartStyles.length)];
+            
+            // Random position across entire width
+            heart.style.left = Math.random() * 100 + '%';
+            
+            // Random starting position from bottom of screen
+            heart.style.top = (Math.random() * 20 + 90) + 'vh';
+            
+            // Random size
+            const size = Math.random() * 30 + 20;
+            heart.style.fontSize = size + 'px';
+            
+            // Random animation duration
+            heart.style.animationDuration = (Math.random() * 6 + 4) + 's';
+            
+            // Random horizontal movement
+            const randomX = Math.random() * 100 - 50; // -50 to 50
+            heart.style.animationName = 'float';
+            
+            // Custom animation for each heart for more varied movements
+            const keyframes = `
+                @keyframes float${Math.random().toString(36).substr(2, 9)} {
+                    0% {
+                        transform: translate(0, 0) rotate(0deg);
+                        opacity: 0;
+                    }
+                    10% {
+                        opacity: 1;
+                    }
+                    90% {
+                        opacity: 0.7;
+                    }
+                    100% {
+                        transform: translate(${randomX}px, -${window.innerHeight * 1.5}px) rotate(${Math.random() * 360}deg);
+                        opacity: 0;
+                    }
+                }
+            `;
+            
+            // Add the heart to the container
+            heartsContainer.appendChild(heart);
+            
+            // Remove heart after animation completes
+            setTimeout(() => {
+                if (heart.parentNode === heartsContainer) {
+                    heartsContainer.removeChild(heart);
+                }
+            }, 10000); // Long timeout to ensure removal
         }
         
         // Simple music player
@@ -460,7 +554,7 @@
             if (!audio) {
                 audio = new Audio();
                 // Using a placeholder for music - in a real site you would use an actual music file
-                 audio.src = 'gitme.mp3'; // Placeholder
+                audio.src = 'gitme.mp3'; // Placeholder
                 audio.loop = true;
                 playMusic.textContent = '🔇 Müziği Durdur';
                 audio.play().catch(e => {
@@ -479,7 +573,11 @@
         
         // Create some hearts automatically when the main content is visible
         document.getElementById('enter-button').addEventListener('click', () => {
-            setTimeout(createHearts, 3000);
+            setTimeout(() => {
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(createHeart, i * 100);
+                }
+            }, 3000);
         });
     </script>
 </body>
